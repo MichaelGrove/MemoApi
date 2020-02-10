@@ -1,0 +1,16 @@
+{
+    "name": "Memo Api",
+    "port": 8080,
+    "appSecret": "KeepItSecret-KeepItSafe",
+    "jwt": {
+        "issuer": "You",
+        "expiresIn": "6h"
+    },
+    "database": {
+        "host": "",
+        "port": "",
+        "user": "",
+        "password": "",
+        "database": ""
+    }
+}

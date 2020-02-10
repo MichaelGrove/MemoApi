@@ -1,0 +1,7 @@
+node_modules/
+node_modules/*
+config.json
+dist/
+dist/*
+private.key
+public.key

@@ -12,6 +12,20 @@ class MemoCategoryRepository {
         this.conn = conn;
     }
 
+    public async readAll(): Promise<IMemoCategory[]> {
+        const q = `SELECT * FROM ${table}`;
+        const results: ICategoryQueryResult[] = await this.conn.query(q, []);
+
+        const categoryFactory = new MemoCategoryFactory();
+        return results.map((item: ICategoryQueryResult) => {
+            const category = categoryFactory.makeCategory();
+            category.cid = item.cid;
+            category.color = item.color;
+            category.label = item.label;
+            return category;
+        });
+    }
+
     public async readById(id: number): Promise<IMemoCategory|null> {
         const factory = new MemoCategoryFactory();
         const q = `SELECT * FROM ${table} WHERE cid = ?`;
@@ -26,6 +40,43 @@ class MemoCategoryRepository {
         category.color = firstResult.color;
         category.label = firstResult.label;
         return category;
+    }
+
+    public async create(category: IMemoCategory) {
+        const q = `INSERT INTO ${table} (label, color) VALUES (?, ?)`;
+        const results = await this.conn.query(q, [category.label, category.color]);
+
+        const id = results && results.insertId ? results.InsertId : false;
+        if (!id) {
+            return null;
+        }
+
+        category.cid = id;
+        return category;
+    }
+
+    public async update(category: IMemoCategory) {
+        const q = `
+            UPDATE ${table} SET
+            label = ?,
+            color = ?
+            WHERE cid = ?
+        `;
+
+        await this.conn.query(
+            q, [
+               category.label,
+               category.color,
+               category.cid
+            ]
+        );
+
+        return category;
+    }
+
+    public async delete(category: IMemoCategory) {
+        await this.conn.query(`DELETE FROM ${table} WHERE mid = ?`, [category.cid]);
+        await this.conn.query(`DELETE FROM ${linkTable} WHERE mid = ?`, [category.cid]);
     }
 
     public async readByMemoId(id: number): Promise<IMemoCategory[]> {

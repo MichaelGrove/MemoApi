@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -6,13 +7,14 @@ import AuthRouter from "./router/auth";
 
 const app = express();
 app.use(helmet());
+app.use(cors());
 app.use(express.json());
 app.use(morgan("combined"));
 
 const port = 8080;
 
 app.use("/api/auth", AuthRouter);
-app.use("/api/memo", ApiRouter);
+app.use("/api", ApiRouter);
 
 // define a route handler for the default home page
 app.get("/", async (req: any, res: any) => {

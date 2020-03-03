@@ -13,7 +13,7 @@ class MemoController {
     public async index(req: any, res: any): Promise<any> {
         const repository = new MemoRepository(this.conn);
         const results = await repository.readAll();
-        return res.json(results);
+        return res.json({ data: results });
     }
 
     public async edit(req: any, res: any): Promise<any> {
@@ -28,7 +28,7 @@ class MemoController {
             return res.json({ error: "Memo not found" });
         }
 
-        return res.json(memo);
+        return res.json({ data: memo });
     }
 
     public async create(req: any, res: any): Promise<any> {
@@ -49,12 +49,16 @@ class MemoController {
             return res.json({ error: "Unexpected error" });
         }
 
-        memo.title = body.title;
-        memo.message = body.message;
+        memo.title = String(body.title);
+        memo.message = String(body.message);
         memo.createdAt = now;
         memo.updatedAt = now;
         memo.isFavourite = body.isFavourite === "1" ? 1 : 0;
         memo.isHidden = body.isHidden === "1" ? 1 : 0;
+
+        if (memo.title.length === 0) {
+            return res.json({ error: "Invalid title value length" });
+        }
 
         memo = await memoRepository.create(memo);
 
@@ -69,7 +73,7 @@ class MemoController {
 
         const newMemo = await memoRepository.readById(memo.mid);
 
-        return res.json({ success: 1, memo: newMemo });
+        return res.json({ success: 1, data: newMemo });
     }
 
     public async update(req: any, res: any): Promise<any> {
@@ -89,11 +93,17 @@ class MemoController {
             return res.json({ error: "Unexpected error" });
         }
 
-        memo.title = body.title;
-        memo.message = body.message;
+        memo.title = String(body.title);
+        memo.message = String(body.message);
         memo.updatedAt = moment().format("YYYY-MM-DD HH:mm:ss");
-        memo.isFavourite = body.isFavourite === "1" ? 1 : 0;
-        memo.isHidden = body.isHidden === "1" ? 1 : 0;
+        const isFavourite = Number(body.isFavourite);
+        memo.isFavourite = isFavourite > 0 ? 1 : 0;
+        const isHidden = Number(body.isHidden);
+        memo.isHidden = isHidden > 0 ? 1 : 0;
+
+        if (memo.title.length === 0) {
+            return res.json({ error: "Invalid title value length" });
+        }
 
         memo = await memoRepository.update(memo);
 
@@ -131,7 +141,7 @@ class MemoController {
         await Promise.all(queryPool);
 
         const updatedMemo = await memoRepository.readById(memo.mid);
-        return res.json({ success: 1, memo: updatedMemo });
+        return res.json({ success: 1, data: updatedMemo });
     }
 
     public async delete(req: any, res: any): Promise<any> {

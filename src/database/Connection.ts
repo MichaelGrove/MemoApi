@@ -1,23 +1,16 @@
 import mysql, { ConnectionConfig } from "mysql";
-import config from "../../config.json";
+import cfg from "../config";
 
 class Connection {
     private conn: mysql.Connection;
-    private database: string;
-    private host: string;
-    private password: string;
-    private port: number;
-    private user: string;
 
     constructor() {
-        this.loadConfig();
-
         this.conn = mysql.createConnection({
-            database: this.database,
-            host: this.host,
-            password: this.password,
-            port: this.port,
-            user: this.user,
+            database: String(cfg.database.database),
+            host: String(cfg.database.host),
+            password: String(cfg.database.password),
+            port: Number(cfg.database.port),
+            user: String(cfg.database.database),
         } as ConnectionConfig);
     }
 
@@ -31,14 +24,6 @@ class Connection {
                 return resolve(results);
             });
         });
-    }
-
-    private loadConfig(): void {
-        this.host = String(config.database.host);
-        this.port = Number(config.database.port);
-        this.user = String(config.database.user);
-        this.password = String(config.database.password);
-        this.database = String(config.database.database);
     }
 }
 

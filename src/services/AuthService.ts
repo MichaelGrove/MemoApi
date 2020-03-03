@@ -1,6 +1,6 @@
 import fs from "fs";
 import jwt from "jsonwebtoken";
-import config from "../../config.json";
+import config from "../config";
 
 class AuthService {
     public generateToken(data: any) {

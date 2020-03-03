@@ -5,3 +5,4 @@ dist/
 dist/*
 private.key
 public.key
+.env

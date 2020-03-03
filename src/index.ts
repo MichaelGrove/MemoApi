@@ -1,9 +1,11 @@
 import cors from "cors";
+import dotenv from "dotenv";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import ApiRouter from "./router/api";
 import AuthRouter from "./router/auth";
+dotenv.config();
 
 const app = express();
 app.use(helmet());
@@ -11,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("combined"));
 
-const port = 8080;
+const port = process.env.NODE_PORT || 8080;
 
 app.use("/api/auth", AuthRouter);
 app.use("/api", ApiRouter);

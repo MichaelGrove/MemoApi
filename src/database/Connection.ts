@@ -1,16 +1,23 @@
 import mysql, { ConnectionConfig } from "mysql";
-import cfg from "../config";
+import requiredForSomeReason from "../../config.json";
+import config from "../config";
+
+const database: string = config.database.database;
+const host: string = config.database.host;
+const password: string = config.database.password;
+const port: number = Number(config.database.port);
+const user: string = config.database.user;
 
 class Connection {
     private conn: mysql.Connection;
 
     constructor() {
         this.conn = mysql.createConnection({
-            database: String(cfg.database.database),
-            host: String(cfg.database.host),
-            password: String(cfg.database.password),
-            port: Number(cfg.database.port),
-            user: String(cfg.database.database),
+            database,
+            host,
+            password,
+            port,
+            user,
         } as ConnectionConfig);
     }
 

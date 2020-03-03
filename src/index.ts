@@ -26,6 +26,7 @@ app.get("/", async (req: any, res: any) => {
             "/api/memo",
         ]
     }));
+});
 
 app.use((req, res, next) => {
     const error = new Error(`Not Found - ${req.originalUrl}`);

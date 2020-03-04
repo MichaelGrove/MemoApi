@@ -8,8 +8,8 @@ const router = express.Router();
 
 const memoController = new MemoController();
 const categoryController = new CategoryController();
-router.post("/memo/", isAuthorized, memoController.index.bind(memoController));
-router.post("/memo/edit/:id", authorize, memoController.edit.bind(memoController));
+router.post("/memo/", memoController.index.bind(memoController));
+router.post("/memo/edit/:id", memoController.edit.bind(memoController));
 router.post("/memo/create", authorize, memoController.create.bind(memoController));
 router.post("/memo/update/:id", authorize, memoController.update.bind(memoController));
 router.post("/memo/delete/:id", authorize, memoController.delete.bind(memoController));

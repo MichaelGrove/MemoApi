@@ -1,22 +1,18 @@
 import bcrypt from "bcrypt";
-import Connection from "..//database/Connection";
-import UserFactory from "../factories/UserFactory";
-import UserRepository from "../repositories/UserRepository";
+import { Request, Response } from "express";
+import { getManager } from "typeorm";
+import { User } from "../entity/User";
 import AuthService from "../services/AuthService";
-
-import { IUser } from "../models/User";
 
 class AuthController {
 
-    private conn: Connection;
     private auth: AuthService;
 
     constructor() {
-        this.conn = new Connection();
         this.auth = new AuthService();
     }
 
-    public async login(req: any, res: any): Promise<any> {
+    public async login(req: Request, res: Response): Promise<any> {
         let body: IAuthRequest = null;
         if (Object.keys(req.body).length > 0) {
             body = req.body as IAuthRequest;
@@ -36,8 +32,8 @@ class AuthController {
             return res.send({ error: "Password is missing!" });
         }
 
-        const repository = new UserRepository(this.conn);
-        const user: IUser = await repository.getUserByEmail(email);
+        const repo = getManager().getRepository(User);
+        const user = await repo.findOne({ email });
         if (user === null) {
             return res.json({ error: "Wrong sign in credentials." });
         }
@@ -50,37 +46,6 @@ class AuthController {
         const token = this.auth.generateToken({ uid: user.uid, email: user.email });
 
         return res.json({ token });
-    }
-
-    public async create(req: any, res: any) {
-        let body: IAuthRequest = null;
-        if (Object.keys(req.body).length > 0) {
-            body = req.body as IAuthRequest;
-        } else if (Object.keys(req.query).length > 0) {
-            body = req.query as IAuthRequest;
-        } else {
-            return res.json({ error: "Unexpected error" });
-        }
-
-        const factory = new UserFactory();
-        const user = factory.makeUser();
-        user.displayName = body.displayName;
-        user.email = body.email;
-        user.password = body.password;
-
-        // tslint:disable-next-line:no-console
-        console.log(user);
-
-        const repository = new UserRepository(this.conn);
-        const salt = bcrypt.genSaltSync(10);
-        user.password = bcrypt.hashSync(user.password, salt);
-        const newUser = await repository.createUser(user);
-
-        if (newUser.uid) {
-            return res.json({ success: 1 });
-        } else {
-            return res.json({ error: "Unexpected error" });
-        }
     }
 }
 

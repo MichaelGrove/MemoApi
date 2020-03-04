@@ -5,3 +5,4 @@ dist/*
 private.key
 public.key
 .env
+ormconfig.json

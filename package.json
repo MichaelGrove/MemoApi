@@ -11,6 +11,8 @@
 		"dev:start": "npm-run-all build start",
 		"dev": "nodemon --watch src -e ts,ejs --exec npm run dev:start",
 		"start": "node .",
+		"ts-start": "ts-node src/index.ts",
+		"ts-setup": "ts-node src/setup.ts",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": "Mikael Lehto",
@@ -36,6 +38,8 @@
 		"moment": "^2.24.0",
 		"morgan": "^1.9.1",
 		"mysql": "^2.17.1",
+		"reflect-metadata": "^0.1.13",
+		"typeorm": "^0.2.24",
 		"typescript": "^3.7.5",
 		"uuid": "^3.4.0"
 	},
@@ -43,7 +47,7 @@
 		"@types/bcrypt": "^3.0.0",
 		"@types/express": "^4.17.2",
 		"@types/morgan": "^1.7.37",
-		"@types/node": "^13.1.8",
+		"@types/node": "^13.7.7",
 		"fs-extra": "^8.1.0",
 		"nodemon": "^2.0.2",
 		"npm-run-all": "^4.1.5",

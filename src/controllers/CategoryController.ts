@@ -1,29 +1,23 @@
-import Connection from "../database/Connection";
-import MemoCategoryFactory from "../factories/MemoCategoryFactory";
-import MemoCategoryRepository from "../repositories/MemoCategoryRepository";
+import { Request, Response } from "express";
+import { getManager } from "typeorm";
+import { MemoCategory } from "../entity/MemoCategory";
 
 class CategoryController {
 
-    private conn: Connection;
-
-    constructor() {
-        this.conn = new Connection();
-    }
-
-    public async index(req: any, res: any) {
-        const repository = new MemoCategoryRepository(this.conn);
-        const results = await repository.readAll();
+    public async index(req: Request, res: Response) {
+        const repo = getManager().getRepository(MemoCategory);
+        const results = await repo.find();
         return res.json({ data: results });
     }
 
-    public async edit(req: any, res: any) {
-        const repository = new MemoCategoryRepository(this.conn);
+    public async edit(req: Request, res: Response) {
         const id = req.params && req.params.id ? req.params.id : false;
         if (!id) {
             return res.json({ error: "Missing ID" });
         }
 
-        const category = await repository.readById(id);
+        const repo = getManager().getRepository(MemoCategory);
+        const category = await repo.findOne(id);
         if (category === null) {
             return res.json({ error: "Category not found" });
         }
@@ -31,12 +25,10 @@ class CategoryController {
         return res.json({ data: category });
     }
 
-    public async create(req: any, res: any) {
-        const repository = new MemoCategoryRepository(this.conn);
-        const factory = new MemoCategoryFactory();
-        const category = factory.makeCategory();
-
+    public async create(req: Request, res: Response) {
         let body: ICategoryRequest = null;
+
+        // Replace with validator
         if (Object.keys(req.body).length > 0) {
             body = req.body as ICategoryRequest;
         } else if (Object.keys(req.query).length > 0) {
@@ -45,6 +37,7 @@ class CategoryController {
             return res.json({ error: "Unexpected error" });
         }
 
+        const category = new MemoCategory();
         category.label = String(body.label);
         category.color = String(body.color);
 
@@ -56,10 +49,8 @@ class CategoryController {
             return res.json({ error: "Invalid color value length "});
         }
 
-        const newCategory = repository.create(category);
-        if (newCategory == null) {
-            return res.json({ error: "Unexpected error" });
-        }
+        const repo = getManager().getRepository(MemoCategory);
+        const newCategory = await repo.save(category);
 
         return res.json({ success: 1, data: newCategory });
     }
@@ -90,16 +81,16 @@ class CategoryController {
             return res.json({ error: "Invalid color value length "});
         }
 
-        const repo = new MemoCategoryRepository(this.conn);
-        const category = await repo.readById(id);
-        if (category == null) {
+        const repo = getManager().getRepository(MemoCategory);
+        const category = await repo.findOne(id);
+        if (category === null) {
             return res.json({ error: "Category not found" });
         }
 
         category.label = label;
         category.color = color;
 
-        const updatedCategory = await repo.update(category);
+        const updatedCategory = await repo.save(category);
 
         return res.json({ success: 1, data: updatedCategory });
     }
@@ -110,9 +101,9 @@ class CategoryController {
             return res.json({ error: "Missing ID" });
         }
 
-        const repo = new MemoCategoryRepository(this.conn);
-        const category = await repo.readById(id);
-        if (!category) {
+        const repo = getManager().getRepository(MemoCategory);
+        const category = await repo.findOne(id);
+        if (category === null) {
             return res.json({ error: "Category not found" });
         }
 

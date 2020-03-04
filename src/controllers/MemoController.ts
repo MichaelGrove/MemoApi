@@ -6,9 +6,14 @@ import { MemoCategory } from "../entity/MemoCategory";
 
 class MemoController {
 
-    public async index(req: Request, res: Response): Promise<any> {
+    public async index(req: any, res: Response): Promise<any> {
         const memoRepository = getManager().getRepository(Memo);
-        const results = await memoRepository.find();
+        let results: Memo[] = [];
+        if (!req.isAuthorized) {
+            results = await memoRepository.find({ isHidden: 0 });
+        } else {
+            results = await memoRepository.find();
+        }
         return res.json({ data: results });
     }
 

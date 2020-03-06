@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "../.env" });
+dotenv.config({ path: process.cwd() + "/.env" });
 
 export default {
     title: process.env.APP_TITLE,

@@ -30,11 +30,13 @@ class AuthService {
     }
 
     private getPublicKey(): string {
-        return fs.readFileSync(process.cwd() + "/public.key", "utf-8");
+        return fs.readFileSync("../public.key", "utf-8");
+        // return fs.readFileSync(process.cwd() + "/public.key", "utf-8");
     }
 
     private getPrivateKey(): string {
-        return fs.readFileSync(process.cwd() + "/private.key", "utf-8");
+        return fs.readFileSync("../private.key", "utf-8");
+        // return fs.readFileSync(process.cwd() + "/private.key", "utf-8");
     }
 }
 

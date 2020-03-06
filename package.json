@@ -12,6 +12,7 @@
 		"dev": "nodemon --watch src -e ts,ejs --exec npm run dev:start",
 		"start": "node .",
 		"ts-start": "ts-node src/index.ts",
+		"ts-dev": "nodemon --watch src -e ts,ej --exec npm run ts-start",
 		"ts-setup": "ts-node src/setup.ts",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},

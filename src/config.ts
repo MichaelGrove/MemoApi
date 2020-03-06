@@ -5,6 +5,7 @@ export default {
     title: process.env.APP_TITLE,
     secret: process.env.APP_SECRET,
     mode: process.env.NODE_ENV,
+    path: process.env.NODE_PATH,
     port: process.env.NODE_PORT,
     jwt: {
         issuer: process.env.JWT_ISSUER,

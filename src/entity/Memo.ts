@@ -28,7 +28,7 @@ export class Memo {
     public isHidden: number;
 
     // tslint:disable-next-line: variable-name
-    @ManyToMany((_type) => MemoCategory, (category) => category.memos)
+    @ManyToMany((_type) => MemoCategory, (category) => category.memos, { cascade: true })
     @JoinTable()
     public categories: MemoCategory[];
 

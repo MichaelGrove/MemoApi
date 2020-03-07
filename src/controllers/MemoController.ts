@@ -8,12 +8,24 @@ class MemoController {
 
     public async index(req: any, res: Response): Promise<any> {
         const memoRepository = getManager().getRepository(Memo);
+
         let results: Memo[] = [];
-        if (!req.isAuthorized) {
-            results = await memoRepository.find({ isHidden: 0 });
+        if (req.isAuthorized) {
+            results = await memoRepository
+                .createQueryBuilder("memo")
+                .leftJoinAndSelect("memo.categories", "category")
+                .getMany();
         } else {
-            results = await memoRepository.find();
+            results = await memoRepository
+                .createQueryBuilder("memo")
+                .leftJoinAndSelect("memo.categories", "category")
+                .where("memo.isHidden = :isHidden", { isHidden: 0 })
+                .getMany();
         }
+
+        // tslint:disable-next-line: no-console
+        console.log(results[135]);
+
         return res.json({ data: results });
     }
 
@@ -23,8 +35,12 @@ class MemoController {
             return res.json({ error: "Missing ID" });
         }
 
-        const memoRepository = getManager().getRepository(Memo);
-        const memo = await memoRepository.findOne(id);
+        const memo = await getManager().getRepository(Memo)
+            .createQueryBuilder("memo")
+            .leftJoinAndSelect("memo.categories", "category")
+            .where("memo.mid = :mid", { mid: id })
+            .getOne();
+
 
         if (!memo) {
             return res.json({ error: "Memo not found" });
@@ -90,7 +106,8 @@ class MemoController {
         let categories: MemoCategory[] = [];
         const memoCategoryRepository = getManager().getRepository(MemoCategory);
         if (Array.isArray(body.categories) && body.categories.length > 0) {
-            categories = await memoCategoryRepository.findByIds(body.categories.map((cid) => Number(cid)));
+            const cids = body.categories.map((cid) => Number(cid)).filter((cid) => cid > 0);
+            categories = await memoCategoryRepository.findByIds(cids);
         }
 
         const memoRepository = getManager().getRepository(Memo);

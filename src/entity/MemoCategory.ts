@@ -13,9 +13,6 @@ export class MemoCategory {
     @Column("varchar", { length: 100 })
     public color: string;
 
-    // tslint:disable-next-line: variable-name
-    @ManyToMany((type) => Memo, (memo) => memo.categories)
-    @JoinTable()
     public memos: Memo[];
 
 }

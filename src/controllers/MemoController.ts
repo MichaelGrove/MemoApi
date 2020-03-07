@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { getManager } from "typeorm";
 import { Memo } from "../entity/Memo";
 import { MemoCategory } from "../entity/MemoCategory";
-// import moment from "moment";
 
 class MemoController {
 
@@ -22,9 +21,6 @@ class MemoController {
                 .where("memo.isHidden = :isHidden", { isHidden: 0 })
                 .getMany();
         }
-
-        // tslint:disable-next-line: no-console
-        console.log(results[135]);
 
         return res.json({ data: results });
     }

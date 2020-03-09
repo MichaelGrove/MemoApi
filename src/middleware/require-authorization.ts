@@ -5,17 +5,17 @@ export default async (req: any, res: any, next: any) => {
     const headers = req.headers || {};
     const authorization = headers.authorization || "";
     if (!authorization) {
-        return res.status(403).send("Unauthorised!");
+        return res.status(403).json({ error: "Unauthorised!" });
     }
 
     const token = authorization.replace("Bearer ", "");
     if (!token) {
-        return res.status(403).send("Unauthorised!");
+        return res.status(403).json({ error: "Unauthorised!" });
     }
 
     if (authService.verifyToken(token)) {
         next();
     } else {
-        return res.status(403).send("Unauthorised!");
+        return res.status(403).json({ error: "Unauthorised!" });
     }
 };

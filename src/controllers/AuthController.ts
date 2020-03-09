@@ -4,6 +4,11 @@ import { getManager } from "typeorm";
 import { User } from "../entity/User";
 import AuthService from "../services/AuthService";
 
+interface IAuthRequest {
+    email: string;
+    password: string;
+}
+
 class AuthController {
 
     private auth: AuthService;
@@ -13,28 +18,20 @@ class AuthController {
     }
 
     public async login(req: Request, res: Response): Promise<any> {
-        let body: IAuthRequest = null;
-        if (Object.keys(req.body).length > 0) {
-            body = req.body as IAuthRequest;
-        } else if (Object.keys(req.query).length > 0) {
-            body = req.query as IAuthRequest;
-        } else {
-            return res.json({ error: "Unexpected error" });
-        }
-
+        const body = req.body as IAuthRequest;
         const email = String(body.email);
         const password = String(body.password);
         if (!email) {
-            return res.send({ error: "Email is missing!" });
+            return res.json({ error: "Email is missing!" });
         }
 
         if (!password) {
-            return res.send({ error: "Password is missing!" });
+            return res.json({ error: "Password is missing!" });
         }
 
         const repo = getManager().getRepository(User);
         const user = await repo.findOne({ email });
-        if (user === null) {
+        if (!user) {
             return res.json({ error: "Wrong sign in credentials." });
         }
 
@@ -47,12 +44,6 @@ class AuthController {
 
         return res.json({ token });
     }
-}
-
-interface IAuthRequest {
-    displayName: string;
-    email: string;
-    password: string;
 }
 
 export default AuthController;

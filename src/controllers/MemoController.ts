@@ -31,13 +31,13 @@ class MemoController {
                 .getMany();
         }
 
-        return res.json({ data: results });
+        return res.status(200).json({ data: results });
     }
 
     public async edit(req: Request, res: Response): Promise<any> {
         const id = req.params && req.params.id ? req.params.id : false;
         if (!id) {
-            return res.json({ error: "Missing ID" });
+            return res.status(404).json({ error: "Missing ID" });
         }
 
         const memo = await getManager().getRepository(Memo)
@@ -47,10 +47,10 @@ class MemoController {
             .getOne();
 
         if (!memo) {
-            return res.json({ error: "Memo not found" });
+            return res.status(404).json({ error: "Memo not found" });
         }
 
-        return res.json({ data: memo });
+        return res.status(200).json({ data: memo });
     }
 
     public async create(req: Request, res: Response): Promise<any> {
@@ -74,13 +74,13 @@ class MemoController {
         const memoRepository = getManager().getRepository(Memo);
         const newMemo = await memoRepository.save(memo);
 
-        return res.json({ success: 1, data: newMemo });
+        return res.status(200).json({ success: 1, data: newMemo });
     }
 
     public async update(req: Request, res: Response): Promise<any> {
         const id = req.params && req.params.id ? req.params.id : false;
         if (!id) {
-            return res.json({ error: "Missing ID" });
+            return res.status(404).json({ error: "Missing ID" });
         }
 
         const body = req.body as IMemoRequest;
@@ -103,24 +103,24 @@ class MemoController {
 
         const updatedMemo = await memoRepository.save(memo);
 
-        return res.json({ success: 1, data: updatedMemo });
+        return res.status(200).json({ success: 1, data: updatedMemo });
     }
 
     public async delete(req: Request, res: Response): Promise<any> {
         const id = req.params && req.params.id ? req.params.id : false;
         if (!id) {
-            return res.json({ error: "Missing ID" });
+            return res.status(404).json({ error: "Missing ID" });
         }
 
         const memoRepository = getManager().getRepository(Memo);
         const memo = await memoRepository.findOne(id);
 
         if (!memo) {
-            return res.json({ error: "Memo not found" });
+            return res.status(404).json({ error: "Memo not found" });
         }
 
         await memoRepository.delete(memo);
-        return res.json({ success: 1 });
+        return res.status(200).json({ success: 1 });
     }
 }
 

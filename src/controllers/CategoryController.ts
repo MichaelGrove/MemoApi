@@ -13,13 +13,13 @@ class CategoryController {
     public async edit(req: Request, res: Response) {
         const id = req.params && req.params.id ? req.params.id : false;
         if (!id) {
-            return res.json({ error: "Missing ID" });
+            return res.status(404).json({ error: "Missing ID" });
         }
 
         const repo = getManager().getRepository(MemoCategory);
         const category = await repo.findOne(id);
         if (category === null) {
-            return res.json({ error: "Category not found" });
+            return res.status(404).json({ error: "Category not found" });
         }
 
         return res.json({ data: category });
@@ -34,7 +34,7 @@ class CategoryController {
         } else if (Object.keys(req.query).length > 0) {
             body = req.query as ICategoryRequest;
         } else {
-            return res.json({ error: "Unexpected error" });
+            return res.status(404).json({ error: "Unexpected error" });
         }
 
         const category = new MemoCategory();
@@ -42,23 +42,41 @@ class CategoryController {
         category.color = String(body.color);
 
         if (category.label.length === 0) {
-            return res.json({ error: "Invalid label value length" });
+            return res.status(422).json({
+                errors: [
+                    {
+                        value: category.label,
+                        msg: "Invalid label value length",
+                        param: "label",
+                        location: "body"
+                    }
+                ]
+            });
         }
 
         if (category.color.length === 0) {
-            return res.json({ error: "Invalid color value length "});
+            return res.status(422).json({
+                errors: [
+                    {
+                        value: category.color,
+                        msg: "Invalid color value length",
+                        param: "color",
+                        location: "body"
+                    }
+                ]
+            });
         }
 
         const repo = getManager().getRepository(MemoCategory);
         const newCategory = await repo.save(category);
 
-        return res.json({ success: 1, data: newCategory });
+        return res.status(200).json({ success: 1, data: newCategory });
     }
 
     public async update(req: any, res: any) {
         const id = req.params && req.params.id ? req.params.id : false;
         if (!id) {
-            return res.json({ error: "Missing ID" });
+            return res.status(404).json({ error: "Missing ID" });
         }
 
         let body: ICategoryRequest = null;
@@ -67,24 +85,51 @@ class CategoryController {
         } else if (Object.keys(req.query).length > 0) {
             body = req.query as ICategoryRequest;
         } else {
-            return res.json({ error: "Unexpected error" });
+            return res.status(422).json({
+                errors: [
+                    {
+                        value: "",
+                        msg: "Unexpected error",
+                        param: "",
+                        location: "body"
+                    }
+                ]
+            });
         }
 
         const label = String(body.label);
         const color = String(body.color);
 
         if (label.length === 0) {
-            return res.json({ error: "Invalid label value length" });
+            return res.status(422).json({
+                errors: [
+                    {
+                        value: label,
+                        msg: "Invalid label value length",
+                        param: "label",
+                        location: "body"
+                    }
+                ]
+            });
         }
 
         if (color.length === 0) {
-            return res.json({ error: "Invalid color value length "});
+            return res.status(422).json({
+                errors: [
+                    {
+                        value: color,
+                        msg: "Invalid color value length",
+                        param: "color",
+                        location: "body"
+                    }
+                ]
+            });
         }
 
         const repo = getManager().getRepository(MemoCategory);
         const category = await repo.findOne(id);
         if (category === null) {
-            return res.json({ error: "Category not found" });
+            return res.status(404).json({ error: "Category not found" });
         }
 
         category.label = label;
@@ -92,23 +137,23 @@ class CategoryController {
 
         const updatedCategory = await repo.save(category);
 
-        return res.json({ success: 1, data: updatedCategory });
+        return res.status(200).json({ success: 1, data: updatedCategory });
     }
 
     public async delete(req: any, res: any) {
         const id = req.params && req.params.id ? req.params.id : false;
         if (!id) {
-            return res.json({ error: "Missing ID" });
+            return res.status(404).json({ error: "Missing ID" });
         }
 
         const repo = getManager().getRepository(MemoCategory);
         const category = await repo.findOne(id);
         if (category === null) {
-            return res.json({ error: "Category not found" });
+            return res.status(404).json({ error: "Category not found" });
         }
 
         await repo.delete(category);
-        return res.json({ success: 1 });
+        return res.status(200).json({ success: 1 });
     }
 }
 

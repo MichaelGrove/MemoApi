@@ -78,7 +78,20 @@ class AuthController {
 
         const token = this.auth.generateToken({ uid: user.uid, email: user.email });
 
-        return res.json({ token });
+        return res.json({ token, name: user.displayName, email: user.email });
+    }
+
+    public async token(req: Request, res: Response): Promise<any> {
+        const authService = new AuthService();
+        const headers = req.headers || {};
+        const authorization = headers.authorization || "";
+        const token = authorization.replace("Bearer ", "");
+
+        if (!authService.verifyToken(token)) {
+            return res.status(200).json({ error: "Unauthorised!" });
+        }
+
+        return res.status(200).json({ success: 1 });
     }
 }
 

@@ -11,6 +11,8 @@ const router = express.Router();
 
 const memoController = new MemoController();
 const categoryController = new CategoryController();
+
+// TODO: SET CORRECT METHODS
 router.post("/memo/", isAuthorized, memoController.index.bind(memoController));
 router.post("/memo/edit/:id", memoController.edit.bind(memoController));
 router.post("/memo/create", [requireAuth, validate(memoValidators)], memoController.create.bind(memoController));

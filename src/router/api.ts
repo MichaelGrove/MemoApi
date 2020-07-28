@@ -12,24 +12,23 @@ const router = express.Router();
 const memoController = new MemoController();
 const categoryController = new CategoryController();
 
-// TODO: SET CORRECT METHODS
-router.post("/memo/", isAuthorized, memoController.index.bind(memoController));
-router.post("/memo/edit/:id", memoController.edit.bind(memoController));
-router.post("/memo/create", [requireAuth, validate(memoValidators)], memoController.create.bind(memoController));
-router.post("/memo/update/:id", [requireAuth, validate(memoValidators)], memoController.update.bind(memoController));
-router.post("/memo/delete/:id", requireAuth, memoController.delete.bind(memoController));
-router.post("/category/", requireAuth, categoryController.index.bind(categoryController));
-router.post("/category/edit/:id", requireAuth, categoryController.edit.bind(categoryController));
+router.get("/memo/", isAuthorized, memoController.index.bind(memoController));
+router.get("/memo/:id", memoController.edit.bind(memoController));
+router.post("/memo", [requireAuth, validate(memoValidators)], memoController.create.bind(memoController));
+router.put("/memo/:id", [requireAuth, validate(memoValidators)], memoController.update.bind(memoController));
+router.delete("/memo/:id", requireAuth, memoController.delete.bind(memoController));
+router.get("/category", requireAuth, categoryController.index.bind(categoryController));
+router.get("/category/:id", requireAuth, categoryController.edit.bind(categoryController));
 router.post(
-    "/category/create",
+    "/category",
     [requireAuth, validate(categoryValidators)],
     categoryController.create.bind(categoryController)
 );
-router.post(
-    "/category/update/:id",
+router.put(
+    "/category/:id",
     [requireAuth, validate(categoryValidators)],
     categoryController.update.bind(categoryController)
 );
-router.post("/category/delete/:id", requireAuth, categoryController.delete.bind(categoryController));
+router.delete("/category/:id", requireAuth, categoryController.delete.bind(categoryController));
 
 export default router;

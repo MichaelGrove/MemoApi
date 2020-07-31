@@ -26,17 +26,8 @@ class CategoryController {
     }
 
     public async create(req: Request, res: Response) {
-        let body: ICategoryRequest = null;
-
         // Replace with validator
-        if (Object.keys(req.body).length > 0) {
-            body = req.body as ICategoryRequest;
-        } else if (Object.keys(req.query).length > 0) {
-            body = req.query as ICategoryRequest;
-        } else {
-            return res.status(404).json({ error: "Unexpected error" });
-        }
-
+        const body = req.body as ICategoryRequest;
         const category = new MemoCategory();
         category.label = String(body.label);
         category.color = String(body.color);
@@ -79,24 +70,7 @@ class CategoryController {
             return res.status(404).json({ error: "Missing ID" });
         }
 
-        let body: ICategoryRequest = null;
-        if (Object.keys(req.body).length > 0) {
-            body = req.body as ICategoryRequest;
-        } else if (Object.keys(req.query).length > 0) {
-            body = req.query as ICategoryRequest;
-        } else {
-            return res.status(422).json({
-                errors: [
-                    {
-                        value: "",
-                        msg: "Unexpected error",
-                        param: "",
-                        location: "body"
-                    }
-                ]
-            });
-        }
-
+        const body = req.body as ICategoryRequest;
         const label = String(body.label);
         const color = String(body.color);
 

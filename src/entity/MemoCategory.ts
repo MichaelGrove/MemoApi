@@ -10,8 +10,8 @@ export class MemoCategory {
     @Column("varchar", { length: 100 })
     public label: string;
 
-    @Column("varchar", { length: 100 })
-    public color: string;
+    // @Column("varchar", { length: 100 })
+    // public color: string;
 
     public memos: Memo[];
 

@@ -30,7 +30,6 @@ class CategoryController {
         const body = req.body as ICategoryRequest;
         const category = new MemoCategory();
         category.label = String(body.label);
-        category.color = String(body.color);
 
         if (category.label.length === 0) {
             return res.status(422).json({
@@ -39,19 +38,6 @@ class CategoryController {
                         value: category.label,
                         msg: "Invalid label value length",
                         param: "label",
-                        location: "body"
-                    }
-                ]
-            });
-        }
-
-        if (category.color.length === 0) {
-            return res.status(422).json({
-                errors: [
-                    {
-                        value: category.color,
-                        msg: "Invalid color value length",
-                        param: "color",
                         location: "body"
                     }
                 ]
@@ -72,7 +58,6 @@ class CategoryController {
 
         const body = req.body as ICategoryRequest;
         const label = String(body.label);
-        const color = String(body.color);
 
         if (label.length === 0) {
             return res.status(422).json({
@@ -87,19 +72,6 @@ class CategoryController {
             });
         }
 
-        if (color.length === 0) {
-            return res.status(422).json({
-                errors: [
-                    {
-                        value: color,
-                        msg: "Invalid color value length",
-                        param: "color",
-                        location: "body"
-                    }
-                ]
-            });
-        }
-
         const repo = getManager().getRepository(MemoCategory);
         const category = await repo.findOne(id);
         if (category === null) {
@@ -107,7 +79,6 @@ class CategoryController {
         }
 
         category.label = label;
-        category.color = color;
 
         const updatedCategory = await repo.save(category);
 
@@ -134,7 +105,6 @@ class CategoryController {
 interface ICategoryRequest {
     cid: string;
     label: string;
-    color: string;
 }
 
 export default CategoryController;

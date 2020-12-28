@@ -11,11 +11,7 @@ class CategoryController {
     }
 
     public async edit(req: Request, res: Response) {
-        const id = req.params && req.params.id ? req.params.id : false;
-        if (!id) {
-            return res.status(404).json({ error: "Missing ID" });
-        }
-
+        const id = req.params.id;
         const repo = getManager().getRepository(MemoCategory);
         const category = await repo.findOne(id);
         if (category === null) {
@@ -26,39 +22,10 @@ class CategoryController {
     }
 
     public async create(req: Request, res: Response) {
-        // Replace with validator
-        const body = req.body as ICategoryRequest;
-        const category = new MemoCategory();
-        category.label = String(body.label);
-
-        if (category.label.length === 0) {
-            return res.status(422).json({
-                errors: [
-                    {
-                        value: category.label,
-                        msg: "Invalid label value length",
-                        param: "label",
-                        location: "body"
-                    }
-                ]
-            });
-        }
-
-        const repo = getManager().getRepository(MemoCategory);
-        const newCategory = await repo.save(category);
-
-        return res.status(200).json({ success: 1, data: newCategory });
-    }
-
-    public async update(req: any, res: any) {
-        const id = req.params && req.params.id ? req.params.id : false;
-        if (!id) {
-            return res.status(404).json({ error: "Missing ID" });
-        }
-
         const body = req.body as ICategoryRequest;
         const label = String(body.label);
 
+        // TODO: Replace with validator
         if (label.length === 0) {
             return res.status(422).json({
                 errors: [
@@ -73,16 +40,37 @@ class CategoryController {
         }
 
         const repo = getManager().getRepository(MemoCategory);
-        const category = await repo.findOne(id);
-        if (category === null) {
-            return res.status(404).json({ error: "Category not found" });
+        const category = await repo.save({ label });
+
+        return res.status(200).json({ category });
+    }
+
+    public async update(req: any, res: any) {
+        const id = req.params.id;
+        const body = req.body as ICategoryRequest;
+        const label = String(body.label);
+
+        // TODO: Replace with validator
+        if (label.length === 0) {
+            return res.status(422).json({
+                errors: [
+                    {
+                        value: label,
+                        msg: "Invalid label value length",
+                        param: "label",
+                        location: "body"
+                    }
+                ]
+            });
         }
 
-        category.label = label;
+        const repo = getManager().getRepository(MemoCategory);
+        const category = repo.save({
+            cid: id,
+            label
+        });
 
-        const updatedCategory = await repo.save(category);
-
-        return res.status(200).json({ success: 1, data: updatedCategory });
+        return res.status(200).json({ category });
     }
 
     public async delete(req: any, res: any) {
@@ -98,7 +86,7 @@ class CategoryController {
         }
 
         await repo.delete(category);
-        return res.status(200).json({ success: 1 });
+        return res.status(200);
     }
 }
 

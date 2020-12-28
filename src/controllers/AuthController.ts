@@ -21,6 +21,7 @@ class AuthController {
         const body = req.body as IAuthRequest;
         const email = String(body.email);
         const password = String(body.password);
+        
         if (!email) {
             return res.status(422).json({
                 errors: [
@@ -88,10 +89,10 @@ class AuthController {
         const token = authorization.replace("Bearer ", "");
 
         if (!authService.verifyToken(token)) {
-            return res.status(200).json({ error: "Unauthorised!" });
+            return res.status(403).json({ error: "Unauthorised!" });
         }
 
-        return res.status(200).json({ success: 1 });
+        return res.status(200);
     }
 }
 

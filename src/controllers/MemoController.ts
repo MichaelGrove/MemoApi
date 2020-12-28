@@ -35,10 +35,7 @@ class MemoController {
     }
 
     public async edit(req: Request, res: Response): Promise<any> {
-        const id = req.params && req.params.id ? req.params.id : false;
-        if (!id) {
-            return res.status(404).json({ error: "Missing ID" });
-        }
+        const id = req.params.id;
 
         const memo = await getManager().getRepository(Memo)
             .createQueryBuilder("memo")
@@ -50,77 +47,76 @@ class MemoController {
             return res.status(404).json({ error: "Memo not found" });
         }
 
-        return res.status(200).json({ data: memo });
+        return res.status(200).json({ memo });
     }
 
     public async create(req: Request, res: Response): Promise<any> {
         const body = req.body as IMemoRequest;
 
-        let categories: MemoCategory[] = [];
-        const memoCategoryRepository = getManager().getRepository(MemoCategory);
-        if (Array.isArray(body.categories) && body.categories.length > 0) {
-            categories = await memoCategoryRepository.findByIds(body.categories.map((cid) => cid));
-        }
+        const categories = await this.getRequestCategories(body);
 
-        const memo = new Memo();
-        memo.title = body.title;
-        memo.message = body.message;
-        memo.createdAt = new Date();
-        memo.updatedAt = new Date();
-        memo.isFavourite = Number(body.isFavourite) > 0 ? 1 : 0;
-        memo.isHidden = Number(body.isHidden) > 0 ? 1 : 0;
-        memo.categories = categories;
-
+        const now = new Date();
         const memoRepository = getManager().getRepository(Memo);
-        const newMemo = await memoRepository.save(memo);
+        const memo = await memoRepository.save({
+            title: body.title,
+            message: body.message,
+            createdAt: now,
+            updatedAt: now,
+            isFavourite: Number(body.isFavourite) > 0 ? 1 : 0,
+            isHidden: Number(body.isHidden) > 0 ? 1 : 0,
+            categories: categories,
+        });
 
-        return res.status(200).json({ success: 1, data: newMemo });
+        return res.status(200).json({ memo });
     }
 
     public async update(req: Request, res: Response): Promise<any> {
-        const id = req.params && req.params.id ? req.params.id : false;
-        if (!id) {
-            return res.status(404).json({ error: "Missing ID" });
-        }
-
+        const id = req.params.id;
         const body = req.body as IMemoRequest;
 
-        let categories: MemoCategory[] = [];
-        const memoCategoryRepository = getManager().getRepository(MemoCategory);
-        if (Array.isArray(body.categories) && body.categories.length > 0) {
-            const cids = body.categories.map((cid) => Number(cid)).filter((cid) => cid > 0);
-            categories = await memoCategoryRepository.findByIds(cids);
-        }
+        const categories = await this.getRequestCategories(body);
 
+        const now = new Date();
         const memoRepository = getManager().getRepository(Memo);
-        const memo = await memoRepository.findOne(id);
-        memo.title = String(body.title);
-        memo.message = String(body.message);
-        memo.updatedAt = new Date();
-        memo.isFavourite = Number(body.isFavourite) > 0 ? 1 : 0;
-        memo.isHidden = Number(body.isHidden) > 0 ? 1 : 0;
-        memo.categories = categories;
+        const memo = await memoRepository.save({
+            mid: Number(id),
+            title: body.title,
+            message: body.message,
+            createdAt: now,
+            updatedAt: now,
+            isFavourite: Number(body.isFavourite) > 0 ? 1 : 0,
+            isHidden: Number(body.isHidden) > 0 ? 1 : 0,
+            categories: categories,
+        });
 
-        const updatedMemo = await memoRepository.save(memo);
-
-        return res.status(200).json({ success: 1, data: updatedMemo });
+        return res.status(200).json({ memo });
     }
 
     public async delete(req: Request, res: Response): Promise<any> {
-        const id = req.params && req.params.id ? req.params.id : false;
-        if (!id) {
-            return res.status(404).json({ error: "Missing ID" });
-        }
-
+        const id = req.params.id;
         const memoRepository = getManager().getRepository(Memo);
-        const memo = await memoRepository.findOne(id);
+        
+        return memoRepository.findOneOrFail(id)
+            .then(memo => {
+                memoRepository.delete(memo);
+                return res.status(200);
+            })
+            .catch(() => {
+                return res.status(404).json({ error: "Memo not found" });    
+            });
+    }
 
-        if (!memo) {
-            return res.status(404).json({ error: "Memo not found" });
+    private async getRequestCategories(body: IMemoRequest) {
+        let categories: MemoCategory[] = [];
+        const memoCategoryRepository = getManager().getRepository(MemoCategory);
+        if (Array.isArray(body.categories) && body.categories.length) {
+            categories = await memoCategoryRepository.findByIds(
+                body.categories
+                    .map(cid => Number(cid))
+                    .filter((cid) => cid > 0)
+            );
         }
-
-        await memoRepository.delete(memo);
-        return res.status(200).json({ success: 1 });
+        return categories;
     }
 }
 

@@ -99,7 +99,7 @@ class MemoController {
         return memoRepository.findOneOrFail(id)
             .then(memo => {
                 memoRepository.delete(memo);
-                return res.status(200);
+                return res.sendStatus(200);
             })
             .catch(() => {
                 return res.status(404).json({ error: "Memo not found" });    

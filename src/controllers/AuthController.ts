@@ -92,7 +92,7 @@ class AuthController {
             return res.status(403).json({ error: "Unauthorised!" });
         }
 
-        return res.status(200);
+        return res.sendStatus(200);
     }
 }
 

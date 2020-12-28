@@ -86,7 +86,7 @@ class CategoryController {
         }
 
         await repo.delete(category);
-        return res.status(200);
+        return res.sendStatus(200);
     }
 }
 

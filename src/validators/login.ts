@@ -1,6 +1,6 @@
-import { check } from "express-validator";
+import { body } from "express-validator";
 
 export default [
-    check("email", "Email is required").isString().isEmail(),
-    check("password", "Password is required").not().isEmpty().isString()
+    body("email", "Email is required").isString().isEmail(),
+    body("password", "Password is required").not().isEmpty().isString()
 ];

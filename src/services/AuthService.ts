@@ -21,7 +21,7 @@ class AuthService {
     public verifyToken(token: string): string|object|null {
         try {
             // const publicKey = this.getPublicKey();
-            return jwt.verify(token, config.secret, { algorithms: ['RS256'] });
+            return jwt.verify(token, config.secret);
         } catch (e) {
             // tslint:disable-next-line:no-console
             console.log("Error verifying jwt token:", e);

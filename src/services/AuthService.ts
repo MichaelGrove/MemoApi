@@ -1,15 +1,15 @@
-import fs from "fs";
+// import fs from "fs";
 import jwt from "jsonwebtoken";
 import config from "../config";
 
 class AuthService {
     public generateToken(data: any) {
         try {
-            const privateKey = this.getPrivateKey();
-            return jwt.sign(data, privateKey, {
+            // const privateKey = this.getPrivateKey();
+            return jwt.sign(data, config.secret, {
                 issuer: config.jwt.issuer,
                 expiresIn: config.jwt.expiresIn,
-                algorithm: "RS256"
+                // algorithm: "RS256"
             });
         } catch (e) {
             // tslint:disable-next-line:no-console
@@ -20,8 +20,8 @@ class AuthService {
 
     public verifyToken(token: string): string|object|null {
         try {
-            const publicKey = this.getPublicKey();
-            return jwt.verify(token, publicKey, { algorithms: ['RS256'] });
+            // const publicKey = this.getPublicKey();
+            return jwt.verify(token, config.secret, { algorithms: ['RS256'] });
         } catch (e) {
             // tslint:disable-next-line:no-console
             console.log("Error verifying jwt token:", e);
@@ -29,13 +29,13 @@ class AuthService {
         }
     }
 
-    private getPublicKey(): string {
-        return fs.readFileSync(process.cwd() + "/public.key", "utf-8");
-    }
+    // private getPublicKey(): string {
+    //     return fs.readFileSync(process.cwd() + "/public.key", "utf-8");
+    // }
 
-    private getPrivateKey(): string {
-        return fs.readFileSync(process.cwd() + "/private.key", "utf-8");
-    }
+    // private getPrivateKey(): string {
+    //     return fs.readFileSync(process.cwd() + "/private.key", "utf-8");
+    // }
 }
 
 export default AuthService;
